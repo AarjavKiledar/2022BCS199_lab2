@@ -1,0 +1,45 @@
+name: MLOps Lab 2 Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  train-and-report:
+    runs-proxy: true
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt 
+
+    - name: Run training script
+      run: python train.py 
+
+    - name: Generate Job Summary
+      run: |
+        echo "## Experiment Results" >> $GITHUB_STEP_SUMMARY
+        echo "**Name:** Aarjav Kiledar" >> $GITHUB_STEP_SUMMARY
+        echo "**Roll Number:** <Insert_Your_Roll_No_Here>" >> $GITHUB_STEP_SUMMARY 
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Metrics" >> $GITHUB_STEP_SUMMARY
+        # Read the JSON file and format it for the summary
+        cat output/results.json | jq -r 'to_entries | .[] | "* **\(.key)**: \(.value)"' >> $GITHUB_STEP_SUMMARY 
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: experiment-results
+        path: output/ 
