@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import os
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -27,6 +28,7 @@ r2 = r2_score(y_test, y_pred)
 
 # 5. Save outputs [cite: 105]
 # Save metrics to JSON [cite: 108, 132]
+os.makedirs('output', exist_ok=True) # 
 metrics = {
     "MSE": round(mse, 4),
     "R2 Score": round(r2, 4)
